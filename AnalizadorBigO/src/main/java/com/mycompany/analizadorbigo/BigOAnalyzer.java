@@ -18,7 +18,7 @@ public class BigOAnalyzer {
 
         String[] lines = code.split("\n");
         StringBuilder lineAnalysis = new StringBuilder();
-        boolean insideNestedLoop = false; // Detectar bucles anidados
+        int loopDepth = 0; // Para detectar la profundidad de bucles anidados
 
         // Reiniciar conteo de complejidades
         complexitiesCount.clear();
@@ -26,16 +26,14 @@ public class BigOAnalyzer {
         // Análisis línea por línea
         for (int i = 0; i < lines.length; i++) {
             String line = lines[i].trim();
-            String complexity = analyzeLine(line, insideNestedLoop);
 
-            if (complexity != null) {
+            if (line.startsWith("for") || line.startsWith("while")) {
+                loopDepth++;
+                String complexity = getComplexityByDepth(loopDepth);
                 lineAnalysis.append("Línea ").append(i + 1).append(": ").append(complexity).append("\n");
                 complexitiesCount.put(complexity, complexitiesCount.getOrDefault(complexity, 0) + 1);
-
-                // Marcar si estamos dentro de un bucle para detectar anidación
-                if (complexity.equals("O(n)")) {
-                    insideNestedLoop = !insideNestedLoop; // Alternar el estado
-                }
+            } else if (line.equals("}")) {
+                loopDepth = Math.max(0, loopDepth - 1); // Reducir profundidad al cerrar un bloque
             }
         }
 
@@ -56,23 +54,21 @@ public class BigOAnalyzer {
                 + "\n\nNota: Los bucles anidados incrementan exponencialmente la complejidad.";
     }
 
-    private String analyzeLine(String line, boolean insideNestedLoop) {
-        // Detectar bucles y asignar complejidades cuadráticas si estamos dentro de un bucle anidado
-        if (line.startsWith("for") || line.startsWith("while")) {
-            return insideNestedLoop ? "O(n^2)" : "O(n)";
+    private String getComplexityByDepth(int depth) {
+        switch (depth) {
+            case 1: return "O(n)";
+            case 2: return "O(n^2)";
+            case 3: return "O(n^3)";
+            case 4: return "O(n^4)";
+            default: return "O(n^" + depth + ")";
         }
-        if (line.contains("log") || line.contains("Math.log")) {
-            return "O(log n)";
-        }
-        if (line.contains("return") || line.contains("System.out.println")) {
-            return "O(1)";
-        }
-        return null; // Ignorar líneas irrelevantes
     }
 
     private String simplifyBigO(Map<String, Integer> complexities) {
         if (complexities.containsKey("O(n!)")) return "O(n!)";
         if (complexities.containsKey("O(2^n)")) return "O(2^n)";
+        if (complexities.containsKey("O(n^4)")) return "O(n^4)";
+        if (complexities.containsKey("O(n^3)")) return "O(n^3)";
         if (complexities.containsKey("O(n^2)")) return "O(n^2)";
         if (complexities.containsKey("O(n log n)")) return "O(n log n)";
         if (complexities.containsKey("O(n)")) return "O(n)";
@@ -86,6 +82,9 @@ public class BigOAnalyzer {
             case "O(log n)": return "Bueno";
             case "O(n)": return "Aceptable";
             case "O(n log n)": return "Malo";
+            case "O(n^2)": return "Pobre";
+            case "O(n^3)": return "Muy pobre";
+            case "O(n^4)": return "Extremadamente ineficiente";
             default: return "Horrible/Peor";
         }
     }
@@ -95,9 +94,3 @@ public class BigOAnalyzer {
         return complexitiesCount;
     }
 }
-
-
-
-
-
-

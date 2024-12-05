@@ -30,15 +30,16 @@ public class BigOChart {
     private XYSeriesCollection createDataset(Map<String, Integer> complexities) {
         XYSeriesCollection dataset = new XYSeriesCollection();
 
-        // Generar datos para cada complejidad detectada
+        // Datos para O(1)
         if (complexities.containsKey("O(1)")) {
             XYSeries constant = new XYSeries("O(1)");
-            for (int n = 1; n <= 10; n++) { // Rango pequeño para mantenerlo compacto
+            for (int n = 1; n <= 10; n++) {
                 constant.add(n, 1);
             }
             dataset.addSeries(constant);
         }
 
+        // Datos para O(n)
         if (complexities.containsKey("O(n)")) {
             XYSeries linear = new XYSeries("O(n)");
             for (int n = 1; n <= 10; n++) {
@@ -47,6 +48,7 @@ public class BigOChart {
             dataset.addSeries(linear);
         }
 
+        // Datos para O(n^2)
         if (complexities.containsKey("O(n^2)")) {
             XYSeries quadratic = new XYSeries("O(n^2)");
             for (int n = 1; n <= 10; n++) {
@@ -55,6 +57,25 @@ public class BigOChart {
             dataset.addSeries(quadratic);
         }
 
+        // Datos para O(n^3)
+        if (complexities.containsKey("O(n^3)")) {
+            XYSeries cubic = new XYSeries("O(n^3)");
+            for (int n = 1; n <= 10; n++) {
+                cubic.add(n, n * n * n);
+            }
+            dataset.addSeries(cubic);
+        }
+
+        // Datos para O(n^4)
+        if (complexities.containsKey("O(n^4)")) {
+            XYSeries quartic = new XYSeries("O(n^4)");
+            for (int n = 1; n <= 10; n++) {
+                quartic.add(n, Math.pow(n, 4));
+            }
+            dataset.addSeries(quartic);
+        }
+
+        // Datos para O(log n)
         if (complexities.containsKey("O(log n)")) {
             XYSeries logarithmic = new XYSeries("O(log n)");
             for (int n = 1; n <= 10; n++) {
@@ -63,6 +84,7 @@ public class BigOChart {
             dataset.addSeries(logarithmic);
         }
 
+        // Datos para O(2^n)
         if (complexities.containsKey("O(2^n)")) {
             XYSeries exponential = new XYSeries("O(2^n)");
             for (int n = 1; n <= 10; n++) {
@@ -74,4 +96,3 @@ public class BigOChart {
         return dataset;
     }
 }
-
